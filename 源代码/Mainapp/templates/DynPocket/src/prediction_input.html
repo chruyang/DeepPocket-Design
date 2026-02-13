@@ -1,0 +1,320 @@
+<!-- Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the MIT License. -->
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="Expires" content="0">
+	<meta http-equiv="Last-Modified" content="0">
+	<meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;700&display=swap" rel="stylesheet">
+	<link href="../src/assets/css/styles-v2.css" rel="stylesheet" type="text/css">
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+
+
+	<link rel="stylesheet" href="../src/assets/css/prediction_output.css">
+	<link rel="stylesheet" href="../src/assets/css/index.css">
+    <link rel="stylesheet" href="../src/assets/css/prediction_input.css">
+	<link rel="stylesheet" href="../src/assets/css/table.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+
+	<link rel="stylesheet" href="../src/assets/css/loading.css">
+
+
+	<!-- 下拉框 -->
+	<link href='http://fonts.useso.com/css?family=Raleway:400,300,700' rel='stylesheet' type='text/css'>
+	<!-- <link rel="stylesheet" type="text/css" href="../css/normalize.css" />
+	<link rel="stylesheet" type="text/css" href="../css/demo.css" /> -->
+	<link rel="stylesheet" type="text/css" href="../css/cs-select.css" />
+	<link rel="stylesheet" type="text/css" href="../css/cs-skin-rotate.css" />
+
+	<!-- 下拉框 -->
+
+
+
+
+
+
+
+
+
+
+	<script src="../src/assets/js/ngl.js"></script>
+	<script src="../src/assets/js/jquery.min.js"></script>
+	<script src="../src/assets/js/chroma.min.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+	<title>PocketSeeker</title>
+	<script>
+		let downloadFile;
+	</script>
+</head>
+
+<body>
+	<!-- 加载动画 -->
+	<div class="preloader">
+		<h1 style="font-family: STXinwei; font-size: 50px; margin-top: 180px;">PocketSeeker</h1>
+		<div class="cube-wrapper">
+			<div class="cube-folding">
+				<span class="leaf1"></span>
+				<span class="leaf2"></span>
+				<span class="leaf3"></span>
+				<span class="leaf4"></span>
+			</div>
+			<span class="loading" data-name="Loading">Loading</span>
+		</div>
+	</div>
+
+	<div class="modal-container" id="modal-container"></div>
+
+
+
+	<!-- 导航栏 -->
+		<div class="nav0">
+			<div class="logo"></div>
+			<div class="nav2">
+				<ul id="nav">
+					<li><a href="/home/" ><i class="fa fa-desktop"></i> Home</a> </li>
+					<li><a href="/search/"><i class="fa fa-search"></i> Search</a></li>
+					<li><a href="/prediction/" style="color:rgb(240,119,117);"><i class="fa fa-flask"></i> Prediction</a></li>
+					<li><a href="/help/"><i class="fa fa-compass"></i> Help</a></li>
+					<li><a href="/user/"><i class="fa fa-user-circle-o"></i> User</a></li>
+				</ul>
+			</div>
+			<div class="avatar">
+				<div class="portrait"></div>
+				<div class="name">
+					<span><i class="fa fa-graduation-cap"></i> Welcome, Shmily &nbsp; <a href="/logout/"><i class="fa fa-sign-out"></i></a></span>
+				</div>
+			</div>
+		</div>
+
+
+
+		<!-- 预测台输入界面 -->
+		<div class="prediction_input_bottom" id="inputpage">
+
+			<div class="help_link">
+				<p><i class="fa fa-lightbulb-o" style="color: rgb(255,210, 82);"></i> If you need help,</p>
+				<a href="/help/"><p style="text-decoration: underline;">click here.</p></a>
+			</div>
+
+			<div id="container-sub">
+				<img id="logo" src="../images/logo.png" alt="Logo">
+				<div class="prompts"><i class="fa fa-cube" style="font-weight: bold;"></i> Please follow the prompts to enter on the predict platform.</div>
+			
+				
+				<section id="fileUploadSection">
+					<label for="fileInput" class="custom-file-upload">
+					
+						<div class="upload_file">Upload a PDB file:</div>
+						<form method='post' action='' enctype='multipart/form-data' onsubmit="hideOutputPage();">
+							<div class="btnWhite beforeComplete" id="btnSelectFiles">Choose file</div>
+							<input type="file" id='files' name="files" class="fileInput" accept=".pdb" />
+
+							<div class="or">or</div>
+							<div class="input-container">
+								<select id="selectBox" name="selectedOption">
+									<option value="PDBID">PBD ID</option>
+									<option value="UniProtID">UniProt ID</option>
+									<option value="Sequence">Sequence</option>
+								</select>
+								<input type="text" class="enter-input" id="contentInput" placeholder="Enter content">
+							</div>
+
+
+							<div class="Predict_button" id="btnSubmit"><i class="fa fa-paper-plane"></i> Submit</div>
+						</form>
+					</label> 
+				</section>
+			</div>
+		</div>
+
+
+
+
+
+
+
+		<!-- 预测台输出页面 -->
+		<div class="out-bottom" id="outputpage">
+
+
+
+		
+
+
+
+			<!-- 表格 -->
+			<div class="residue-id" id="residue-id.table">
+				<div class="out-title"><i class="fa fa-plus-square-o"></i> Probability of first three residues</div>
+				<table class="table-1" id="table-1">
+					<tr id="row1">
+						<td>Residue ID</td>
+						<td id="row1col1"></td>
+						<td id="row1col2"></td>
+						<td id="row1col3"></td>
+						<td id="row1col4"></td>
+						<td id="row1col5"></td>
+					</tr>
+					<tr id="row2">
+						<td>Probability value</td>
+						<td id="row2col1"></td>
+						<td id="row2col2"></td>
+						<td id="row2col3"></td>
+						<td id="row2col4"></td>
+						<td id="row2col5"></td>
+					</tr>
+				</table>
+				
+			</div>
+	
+			<!-- 饼状图 -->
+			<div class="pie-chart"> 
+				<div class="out-title"><i class="fa fa-pie-chart"></i> Statistic</div>
+
+				<div class="chart" id="container"></div>         
+			</div>
+	
+			<!-- likehood -->
+			<div class="likehood-bootom">
+
+				<div class="likehoodtext"><i class="fa fa-adjust"></i> Likelihood </i></div>
+				<!-- <img src="../images/likelihood.png" alt="likehood"> -->
+				
+
+				<div class="selectbox">
+
+					<select class="select-class">
+						<option value="base">base</option>
+						<option value="axes">axes</option>
+						<option value="backbone">backbone</option>
+						<option value="ball+stick">ball+stick</option>
+						<option value="cartoon">cartoon</option>
+						<option value="contact">contact</option>
+						<option value="distance">distance</option>
+						<option value="helixorien">helixorient</option>
+						<option value="hyperball">hyperball</option>
+						<option value="label">label</option>
+						<option value="licorice">licorice</option>
+						<option value="ribbo">ribbon</option>
+						<option value="rope">rope</option>
+						<option value="spacefill">spacefill</option>
+						<option value="surface">surface</option>
+						<option value="trace">trace</option>
+						<option value="validation">validation</option>
+					</select>
+					<!-- <select class="cs-select">
+						<option value="" disabled selected>Molecular Representations</option>
+						<option value="base">Base</option>
+						<option value="axes">Axes</option>
+						<option value="backbone">Backbone</option>
+						<option value="ball+stick">Ball+Stick</option>
+						<option value="cartoon">Cartoon</option>
+					</select> -->
+
+
+
+
+
+				</div>					
+					
+
+
+			</div>
+	
+			<!-- 3D -->
+			<div class="threeD-bottom">
+				<div class="scale"></div>
+
+				
+
+				<!-- <div id="viewport" class="fileUploadSectionR" style="position: relative;"> -->
+				<div id="viewport" style="width: 100%; height: 100%;"></div>
+			</div>
+	
+
+			<div class="download-bottom">
+				<div class="out-title" style="font-family: 'STXinwei';"><i class="fa fa-cloud-download"></i> Download</div>
+				<!-- <div class="out-title" id="btnDownload"><i class="fa fa-cloud-download"></i> Download</div> -->
+				<div class="button" id="Download" style="height: 50px; width: 100px; color: cornflowerblue;">
+					<span>Result</span>
+				</div>
+			</div>
+		</div>
+
+
+	<!-- 底栏 -->
+	<div class="footer">
+        <div class="sub_logo"> 
+            <img src="../images/logo.png" alt="logo">
+        </div>
+        <div class="copyright">
+            <span><i class="fa fa-copyright"></i> CopyRight 2024 PocketSeeker</span>
+        </div>
+        <div class="about">
+            <span><i class="fa fa-balance-scale"></i> Legal Notices & Manage Cookies</span>
+        </div>
+        <div class="contact-info">
+            <span><i class="fa fa-envelope-o"></i> Contact us shily_ld@foxmail.com</span>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+		<script src="../src/assets/js/scripts-v3.js"></script>
+		<script src="../src/assets/js/FileSaver.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://unpkg.com/@antv/g2plot@latest/dist/g2plot.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+		<!-- <script src="../js/index.js"></script>
+		<script src="../js/prediction_input.js"></script> -->
+		<script src="../src/assets/js/setchart.js"></script>
+		<script src="../src/assets/js/residue-id.table.js"></script>
+		
+
+		<!-- 下拉框 -->
+		<script src="../js/classie.js"></script>
+		<script src="../js/selectFx.js"></script>
+		<script>
+			(function() {
+				[].slice.call( document.querySelectorAll( 'select.cs-select' ) ).forEach( function(el) {	
+					new SelectFx(el);
+				} );
+			})();
+		</script>
+		<!-- 下拉框 -->
+
+
+
+
+
+		</script>
+
+
+</body>
+
+</html>

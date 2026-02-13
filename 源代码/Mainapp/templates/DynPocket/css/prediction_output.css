@@ -1,0 +1,88 @@
+body {
+    background: linear-gradient(45deg, rgba(66, 183, 245, 0.8) 0%, rgba(66, 245, 189, 0.4) 100%);
+    color: rgba(0, 0, 0, 0.6);
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    line-height: 1.6em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.out-bottom {
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+}
+.residue-id {
+    background-color: white;
+    height: 120px;
+    width: 400px;
+    margin-left: 160px;
+    margin-top: 90px; 
+    font-family: 'STXinwei';
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 15px 0px;
+    border-radius: 5px;
+}
+.out-title {
+    color: black;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-left: 10px;
+    line-height: 2;
+}
+.pie-chart {
+    background-color: white;
+    height: 300px;
+    width: 400px;
+    margin-left: 160px;
+    margin-top: 20px;
+    font-family: 'STXinwei';
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 15px 0px;
+    border-radius: 5px;
+}
+.likehood-bootom {
+    background-color: rgb(255,255,255);
+    height: 40px;
+    width: 450px;
+    margin-left: 660px;
+    margin-top: -440px;
+    font-family: 'STXinwei';
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 15px 0px;
+    border-radius: 5px;
+}
+.likehood-bootom span{
+    color: black;
+    font-size: 22px;
+    margin-left: 10px;
+    line-height: 2;
+}
+.likehood-bootom img {
+    margin-top: -44px;
+    margin-bottom: 40px;
+    margin-left: 160px;
+    width: 50%;
+    height: 100%;
+    background-color: white;
+    border-radius: 5px;
+}
+.threeD-bottom {
+    background-color: white;
+    height: 450px;
+    width: 450px;
+    margin-left: 660px;
+    margin-top: 20px;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 15px 0px;
+    border-radius: 5px;
+}
+.download-bottom {
+    background-color: white;
+    height: 40px;
+    width: 400px;
+    margin-left: 160px;
+    margin-top: -60px;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 15px 0px;
+    border-radius: 5px;
+}
+.download-bottom span {
+    font-family: 'STXinwei';
+}

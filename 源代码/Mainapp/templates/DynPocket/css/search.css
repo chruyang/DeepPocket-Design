@@ -1,0 +1,195 @@
+body {
+    background: linear-gradient(45deg, rgba(66, 183, 245, 0.8) 0%, rgba(66, 245, 189, 0.4) 100%);
+    color: rgba(0, 0, 0, 0.6);
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    line-height: 1.6em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* 居中警告框 */
+.alert {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+/* 修改字体 */
+.alert-message {
+    font-family: 'STXinwei';
+    font-size:24px;
+    text-align: center;
+    background-color: rgb(250,173, 20);
+    border: 2px black;
+    color: white;
+    padding: 30px; /* 内边距 */
+    line-height: 2;
+    height: 150px;
+    width: 350px;
+    border-radius: 5px; /* 边框圆角 */
+}
+
+
+.outer-container {
+    /* background-color: rgba(239,243,245); 灰色背景 */
+    background-color: transparent;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    float: left;
+}
+
+.search-bottom {
+    background-color: white;
+    position: absolute;
+    height: 15%;
+    width: 50%;
+    float: left;
+    /* position: relative; */
+    padding: 20px;
+    margin-top: 100px;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 15px 0px;
+    border-radius: 5px;
+}
+.search-container {
+    display: flex;
+    align-items: center;
+    margin-top: -4px;
+    width: 600px;
+}
+#selectBox {
+    flex: 1;
+    margin-right: 20px;
+    margin-left: 20px;
+    font-family: "Robot";
+    /* line-height: 1.5; */
+    font-size: 17px;
+    height: 50px;
+    width: 120px; 
+    border-radius: 5px;
+}
+.search-input {
+    flex: 3;
+    margin-right: 20px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 50px;
+    margin-top: -2px;
+    width: 250px;
+    font-size: 17px;
+}
+.search-button {
+    background-color: #007bff;
+    font-family: 'STXinwei';
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    height: 50px;
+    margin-top: 10px;
+    margin-bottom: -10px;
+    margin-right: 20px;
+    width: 140px;
+    height: 50px;
+    font-size: 17px;
+}
+.search-button:hover {
+    background-color: #0056b3; /* 鼠标悬停时的背景颜色 */
+}
+.output-bottom {
+    background-color: rgba(255,255,255);
+    position: absolute;
+    height: 55%;
+    width: 50%;
+    float: left;
+    /* position: relative; */
+    padding: 20px;
+    margin-top: 230px;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 15px 0px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column; /* 垂直布局 */
+}
+.result-title {
+    font-family: 'Times New Roman', Times, serif;
+    font-family: 'STXinwei';
+    font-size: 18px;
+    text-align: left;
+    color: #007bff;
+    font-weight: bold;
+}
+.sub-title {
+    font-family: 'Times New Roman', Times, serif;
+    font-family: 'STXinwei';
+    color: rgb(240,119,117);
+    font-size: 25px;
+    margin-left: 40px;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.result {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    margin-bottom: 10px; /* 添加一些底部间距 */
+}
+
+.result img {
+    margin-top: 15px;
+    margin-left: 20px;
+    width: 250px; /* 设置图片宽度 */
+    margin-right: 10px; /* 图片与文字之间的间距 */
+    border: 1px solid #ddd; /* 设置边框为黑色 */
+}
+
+.result-details {
+    margin-left: 20px;
+    margin-right: 20px;
+    width: 60%; /* 表格宽度 */
+    border-collapse: collapse; /* 合并边框 */
+    font-family: 'Robot';
+    color: black;
+    font-size: 13px;
+    margin-top: 15px;
+}
+
+.result-details th,
+.result-details td {
+    border: 1px solid #ddd; /* 边框样式 */
+    padding: 8px; /* 内边距 */
+    text-align: left; /* 文本左对齐 */
+    line-height: 1.7;
+    font-size: 18px;
+    font-family: 'STXinwei';
+}
+
+.head {
+    font-weight: bold;
+}
+/* 可以为链接添加样式 */
+.result-details a {
+    color: blue; /* 链接颜色 */
+}
+
+.result-details a:hover {
+    text-decoration: underline; /* 鼠标悬停时添加下划线 */
+}
+
+.result-details p {
+    /* margin: 0; 清除段落默认的外边距 */
+    line-height: 2;
+}
+
+.result-details a {
+    display: block; /* 使链接占据整行 */
+    margin-top: 5px; /* 添加顶部间距 */
+}

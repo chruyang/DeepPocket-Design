@@ -1,0 +1,342 @@
+# iceui v2.0.5
+* 2022-03-25
+* [优化] ice.js中pjax方法
+* [优化] iceTable组件，增加加载中以及优化head表头
+* [优化] ui.css样式
+
+# iceui v2.0.4
+* 2022-12-24
+* [新增] 支持json的方式设置url，key仅支持字母数字下划线
+* 2022-11-03
+* [优化] ui.js中的validateForm方法的rule属性统一为data-rules
+* [废弃] ui.js中的get和post方法，两个方法设计不合理
+* 2022-10-20
+* [优化] ice.js中toggleCss方法，支持多css属性操作
+* [优化] 日期选择控件，增加clear清空按钮回调方法
+* 2022-10-05
+* [优化] 多图片与多文件上传控件，增加data-count参数数量控制
+* [优化] 弹窗控件传参方式
+* [修复] iv模板引擎的for循环中的一个小bug
+* 2022-06-15
+* [修复] iv模板引擎的i-model输入框在ios环境中输入中文错误问题
+* 2022-06-08
+* [新增] iv模板引擎增加ajax
+* 2022-06-06
+* [新增] input组件上的data-reg正则限制
+* [优化] iv模板引擎的i-type属性
+* [修复] ui.js中val方法获取select多选下拉菜单的值
+* [优化] ui中的一些样式
+* 2022-05-10
+* [优化] 导航条高亮支持子页面
+* 2022-05-09
+* [修复] 导航条滑动多次快速点击导致闪烁的bug
+* 2022-04-27
+* [新增] ice.p数学运算
+* [优化] 所有js控件，增强规范
+* [优化] ui.js一些代码，并添加严格模式
+* [优化] ui.css一些样式
+* [废弃] ice.js中的scrollWheel方法，这个很鸡肋
+* 2022-04-25
+* [优化] ice.tree目录树插件，增加closeALL参数
+* [优化] ui.css一些样式
+* 2022-04-22
+* [优化] data-scroll 滚动到指定位置属性，增加data-offset偏移量设置
+* 2022-04-21
+* [增加] ice.paging分页控件
+* [修复] ice.view在IOS Safari浏览器中不兼容正则先行断言问题导致的出错
+* 2022-04-13
+* [修复] ice.view中处理复选框造成选中项失效的bug
+* [优化] ice.js的form方法
+* 2022-04-09
+* [优化] ice.view的多维数组赋值
+* [修复] ice.view的for添加列队造成的某些bug
+* [优化] select下拉菜单，增强分组格式化
+* [优化] ani动画过渡效果
+* [优化] css一些样式
+* 2022-03-07
+* [修复] ice.view的for循环在某些情况下造成数据错乱
+* [修复] ice.view的数据length无反应问题
+* [优化] ice.js的slideDown和slideUp
+* [优化] ice.js的ajax方法
+* [删除] ice.js的imgHVC方法（该方法用于图片居中，css就能实现，这里不再提供）
+* [删除] ice.js的trim方法
+* [删除] ice.js的delTag方法
+* [修改] ice.js的getRandom为randInt
+* [增加] ice.js的input方法（oninput）
+* [优化] ice.code代码高亮插件，增加class：code-lang 格式化方式
+* [优化] ice.editor富文本编辑器，优化样式
+
+# iceui v2.0.3
+* 2022-02-08
+* [增加] ice.table增加设置接口的header配置
+* [优化] ice.view可以无需提前预设变量
+* [修复] tab选项卡无法重新渲染问题
+* 2022-01-11
+* [修复] ice.table悬浮列样式错位
+* [修复] select选择框多选在垃圾扣扣浏览器样式溢出问题
+* 2021-12-31
+* [优化] tab选项卡菜单溢出显示滚动条
+* [优化] ice.table无数据时代码
+* 2021-12-28
+* [修复] ice.table悬浮列在分页中样式错位
+* [修复] ice.table分页在form查询时分页信息没有重置，感谢网友「ROC」的反馈
+* [新增] ice.data和ice.localData方法，用于设置本地数据存储，[详情请点这里](https://iceui.cn/examples/iceui/ice)
+* 2021-12-27
+* [修复] select修复onchange两次触发
+* [新增] ui.setSelect(el,json)方法，用于格式化select的选项列表
+* 2021-12-25
+* [修复] ice.area地区选择器点击其它位置触发回调的bug，以及回调数据错误的bug
+* 2021-12-24
+* [新增] 增加ice.success、ice.fail、ice.error、ice.warn提示框
+* 2021-12-22
+* [新增] select增加模糊搜索功能
+* [新增] select增加调用接口数据功能
+* 2021-12-21
+* [修复] ice.table悬浮列在隐藏页面渲染后导致的表格错位问题
+* 2021-12-16
+* [增加] ice.date属性值：data-format(格式化时间格式)和data-view(视图类型：年月日和时间)
+* [增加] ice.table属性值：fixed(固定悬浮列)，在列数很多的情况下使其固定而不随滚动条滚动
+* [优化] ui的box面板标题可以自由设置图标，[详情请点这里](https://iceui.cn/examples/box)
+* 2021-12-11
+* [增加] ice.table的thead增加data-el和el设置，用于设置表格内的内容溢出显示三个点
+* [增加] ice.popup增加footer传值属性，用于设置弹窗footer左下角的内容
+* [优化] ice.popup传值，content和footer传值可以为function或string类型
+* [优化] ui样式，增加item-left和item-right样式
+* 2021-12-10
+* [修复] ice.date图标在ui的InputGroup组合输入框中不显示日历图标问题，感谢网友「ROC」的反馈
+* 2021-12-09
+* [增加] ui中select下拉菜单增加清空项按钮，单选可以清空当前选项
+* 2021-12-07
+* [增加] ice.trigger()触发自定义指定的事件
+* [优化] ice.val()方法，增加对select多选的赋值和取值，感谢网友「主角晨寅」的反馈
+* [优化] ice.view模板引擎代码，优化select多选控件
+* 2021-12-06
+* [增加] ice.table数据表格增加单选(radio)功能
+* [增加] 模板引擎iceView的增加i-type类型指令，限制类型输入与输出，字符类型、整型、浮点型，以及字符长度和浮点长度
+* [增加] ui中select下拉菜单增加多选功能
+* [增加] 模板引擎iceView的下拉菜单修改，增加对下拉菜单的多选功能，无缝对接ui的select
+* [优化] ui代码整体优化
+* 2021-11-19
+* [修复] ice.table数据表格的复选数据重复bug
+* [修复] ice.view数据绑定的一个小bug
+* [优化] ui代码
+* 2021-11-13
+* [优化] ice.view模板引擎代码
+* [优化] ice.run代码
+* [优化] ice.area地区选择器，防止重复格式化，并增加清空按钮
+* 2021-11-09
+* [修复] ice.date选择日期时出现的小BUG
+* [优化] ice.date时间选择控件，点击背景可关闭时间选择器
+* [优化] ice.view模板引擎，增强下拉选择菜单，增强变量名称解析
+* [优化] ice.popup弹窗代码，增加disable参数，可自由设置取消和确定按钮的点击关闭弹窗事件
+* [优化] ice.area地区选择器，防止div设置overflow隐藏时隐藏选择器
+* 2021-11-06
+* [增加] ice.table的thead类型，增加单选功能
+* [优化] ice.table的template，可传function方法
+
+# iceui v2.0.2
+* 2021-11-02
+* [优化] ice.ajax、ice.post、ice.get方法，已改为Promise，之前的参数不变，依旧可以使用传统方式
+* [修复] ice.date的format参数为中文格式时造成的bug，感谢网友「嘴强王者」的反馈
+* [修复] ice.view的select中option为for循环时，无法绑定数据的bug
+* [修复] ui.css的form-control样式冲突问题，感谢网友「守护」的反馈
+* 2021-10-29
+* [优化] iceView的核心重新设计，使其可以处理更加复杂的数据结构
+* 2021-10-19
+* [优化] iceView的i-for属性，增加i-item（用于多维数组循环，指定item的命名）
+* [优化] iceView的i-for属性，增加i-index（用于多维数组循环，指定index的命名）
+* [修复] iceView的i-for造成的if不生效以及其它BUG
+* 2021-10-15
+* [增加] select控件增加optgroup分组
+* [增加] select控件增加style继承样式
+* 2021-10-14
+* [增加] ui中增加notes小便贴控件
+* [增加] ui中增加别名ani-top-in，ani-bottom-in，ani-top-out，ani-bottom-out
+* [增加] ui增加ui.extend扩展
+* 2021-10-11
+* [优化] iceDate的回调函数名称修改
+* [修复] iceDate的预置时间导致的bug
+* [优化] icePopup的弹窗footer按钮
+* 2021-10-09
+* [优化] iceView的i-onclick属性值
+* [优化] iceView的i-model属性值，可以填写表达式或者数组
+* 2021-09-29
+* [新增] iceView的onload增加参数回调
+* [优化] iceView的复选框（返回当前所有选中项的数组value）和单选框（返回当前选中的value）
+* [优化] ui.css的input
+* 2021-09-26
+* [新增] iceTable增加点击复选框时的checkbox回调
+* [新增] iceTable增加checkbox类型的check字段预设，用于将复选框状态绑定该check字段上
+* [优化] iceTable修复直接赋值生成表格时的loading上的BUG
+* [优化] ui.css表单样式
+* 2021-09-25
+* [新增] iceArea内置样式，无需再引用iceArea.css
+* [新增] icePopup增加success回调
+* [优化] icePopup优化确定按钮之后的回调，并可自定义是否关闭当前弹窗
+* [优化] ui.css表单样式
+* [修复] iceTable的空数据下的BUG
+* 2021-09-24
+* [新增] iceTable.js新增param参数，方便自定义传参
+* [修复] iceTable的分页BUG
+* 2021-09-17
+* [新增] ice.js新增ice.clone克隆元素节点，方法：ice('.demo').clone()或ice.clone(el)
+* [新增] ice.js新增ice.cloneObj克隆对象，方法：ice.cloneObj(obj)
+* [新增] ice.js新增ice.copy复制文本到粘贴板，方法：ice.copy('hello')
+* 2021-09-10
+* [优化] iceTable.js数据表格，取消绑定form表单指定id形式，直接通过data
+* [优化] iceTable.js数据表格，form回调名称为form
+* [修复] icePopup.js弹窗的拖动改变大小的BUG
+* 2021-09-09
+* [优化] ui.js性能与规范
+* [优化] ice.js的html与cid方法代码
+* [优化] ice.pjax方法
+* [优化] iceAdmin模板
+* [优化] css代码
+* [新增] area地区选择器插件
+
+* 2021-07-23
+* [优化] Table数据表格
+* [优化] ice.ajax方法，新增form参数
+* [优化] ice.pjax方法，增加重载方法与打开页面方法
+* [新增] ice.js中新增ice.form方法
+* [新增] ice.js中新增ice.keydown方法
+* 2021-07-14
+* [新增] Table数据表格
+* [新增] ice.obj2str方法，对象转为字符串，包括function
+* [新增] ice.pjax方法，让页面支持无刷新，更加丝滑
+* [优化] iceAdmin后台模板js代码，全面改为ice.pjax
+* [修复] ui.js的动态加载组件功能造成参数丢失的bug
+
+# iceui v2.0.1
+* 2021-07-01
+* [新增] 3个loading加载动画
+* [新增] 自动转义code标签内的html
+* [新增] 导航滚动动画.ani-scroll-l与.ani-scroll-r
+* [新增] 鼠标跟随-圆点.follow-disc
+* [新增] Modal模态弹窗
+* [新增] Alert询问框
+* [新增] 单文件和单图片的异步上传，并展示缩略图
+* [新增] 文件拖拽上传
+* [新增] 文档目录树
+* [新增] 颜色选择器组件，支持RGBA与HEX颜色
+* [新增] 模板引擎组件，支持数据双向绑定
+* [新增] 运行代码组件
+* [新增] 下拉选择菜单控件
+* [新增] checkbox复选框样式
+* [新增] radio单选框样式
+* [新增] fieldset集合样式
+* [新增] tag标签的小圆点样式
+* [优化] 重构admin后台模板，使用独特的异步方式，支持同步和异步开发，最后效果一样丝滑
+* [优化] 官方文档
+* [优化] 模块动态加载机制，取消了传统的use方式，可直接调用模块的方法，动态引用js
+* [优化] iceCode代码高亮架构，支持template标签和data-id直接引用
+* [优化] iceEditor富文本编辑器，改为ES6类语法
+* [优化] slider轮播图，使用更加简单
+
+# iceui v1.4.8
+* 2021-05-03
+* [优化] ajax方法，网络超时时，complete()中xhr.status值为408
+* [优化] ui.js get()/post()，complete()通过xhr.status的值判断，增加了警告信息
+* [新增] demo/query方法的示例用法.html中，增加自定义高亮显示的示例
+* 2021-04-30
+* [新增] 多图片上传与多附件上传时的loading等待动画
+* 2021-04-27
+* [新增] alert小控件
+* 2021-04-22
+* [新增] ice.js新增生成随机字符串方法randStr(num)
+* [优化] ajax方法，增加Formdata上传文件
+* [优化] ui.js 多图和多附件上传，改为异步上传
+
+# iceui v1.4.7
+* 2021-02-17
+* [新增] print打印控件
+* [新增] 固定表头的CSS样式table-fixed，美化select的CSS样式sel，必填提示的CSS样式required
+* [新增] ice选择器，增加了text方法
+* [新增] ui.js增加了query、clickTr、iceui.readForm、iceui.validateForm、iceui.validateElement、iceui.clearForm、iceui.loading、iceui.get、iceui.post、iceui.diyAllSel、iceui.diySel方法
+* [优化] val方法，可自动设置美化后的select插件选中
+
+# iceui v1.4.6
+* 2020-12-28
+* [修复] 多图上传、多附件上传BUG
+
+* 2020-12-12
+* [优化] 修复icePopup插件在拖拽模式下，内容区不可编辑
+
+* 2020-10-24
+* [优化] ajax方法，增加async参数，可设置异步或者同步
+* [优化] val方法，可设置select的选中
+
+* 2020-10-23
+* [更新] iceEditor版本
+* [修复] iceDate一些bug
+* [优化] ice.js的一些方法
+
+# iceui v1.4.5
+* 2020-08-06
+* [修改] admin组件的后台侧栏bug
+* [新增] iceDate时间选择的回调函数timeFunc
+
+* 2020-07-25
+* [新增] ice选择器，增加了children、find、siblings、prev、next 这五个常用方法
+* [优化] iceui官方文档更新
+* [优化] ui.js更新attr属性规范，遵循W3C，所有前缀以data-开始
+* [优化] ui.css统一将背景颜色改为bg-color
+* [精简] ui.css代码，修复一些样式bug
+* [优化] 表格样式，完美自适应多端
+* [新增] 表格排序，并定制表格表头以及某行颜色和背景色
+
+* 2020-07-13
+* [修复] ui.js内置单文件上传多个按钮错误BUG
+* [优化] ui.js滚动条滚动状态中的动画交互
+* [优化] 代码规范，主要为Attr属性未加data前缀
+* [优化] 图文列表样式以及自适应
+
+* 2020-05-09
+* [修复] ui.js内置选项卡移动模块闪烁的BUG
+
+* 2020-04-10
+* [修复] iceEditor插件firefox下无法使用BUG
+* [修复] iceEditor插件uploadUrl没配置的情况下造成死循环BUG
+* [修复] iceEditor插件图片与附件上传关闭弹窗时造成打开其它页面BUG
+* [优化] iceDate插件format传参，指定视图无需必填
+* [优化] iceCode插件样式显示风格
+* [修复] iceCode插件高亮的个别BUG
+
+# iceui v1.4.4
+* 2020-04-01
+* [优化] ice的eachNode方法，不存在children的时候直接return
+* [修复] iceEditor插件粘贴内容BUG
+* [优化] iceEditor插件代码样式
+* [优化] iceEditor插件上传图片和上传附件方法
+* [优化] iceEditor插件设置html方法
+* [优化] iceEditor插件初始化数据代码
+* [修复] iceEditor插件弹出框的背景无法覆盖文本框BUG
+
+# iceui v1.4.3
+* 2019-05-09
+* [修复] loading加载动画，ui.js后续代码无法执行的BUG
+* [优化] admin后端框架侧栏菜单自适应
+* [取消] admin后端框架侧栏菜单的脚本控制导航条，转为隐藏式滚动条
+* [优化] ui轮播图控件，默认先显示第一张轮播项视图
+* [优化] ui的样式，取消多行文本框的字体大小
+
+# iceui v1.4.2
+* 2018-05-21
+* [新增] loading加载动画，load-type=3
+* [新增] ui表单的多图片上传
+* [新增] ui表单的多附件上传
+* [优化] popup弹窗插件的一些样式自适应问题
+* [修复] 粘贴替换编辑器内所有内容BUG
+
+# iceui v1.4.1
+* 2018-03-13
+* [优化] ui.css的无用代码
+* [优化] ice选择器的性能
+* [重写] 附件上传工具（解决form嵌套问题）
+* [重写] slider轮播图插件
+* [重写] tree树结构插件
+
+
+
+
+-------------「后续版本更新记录已省略」-------------

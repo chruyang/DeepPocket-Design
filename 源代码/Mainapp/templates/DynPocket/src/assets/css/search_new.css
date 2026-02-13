@@ -1,0 +1,118 @@
+@font-face {
+    font-family: "righteous";
+    src: url("/fonts/Righteous-Regular.ttf");
+} 
+
+/* ------------> 蓝色盖板 <------------*/
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #4169e1;
+    z-index: 1;
+    transition: opacity 0.5s ease, top 1s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+}
+
+.hidden {
+    top: -100%;
+    opacity: 0;
+}
+
+#removeOverlayBtn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 2;
+}
+
+.icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.overlay_title {
+    position: absolute;
+    top: 130px;
+    left: 80px;
+    font-size: 60px;
+    font-weight: 600;
+    font-family: "righteous";
+}
+
+.overlay_content {
+    position: absolute;
+    top: 200px;
+    left: 80px;
+    font-weight: 300;
+    font-size: medium;
+    width: 800px;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+/* ------------> 蓝色盖板 <------------*/
+/* 搜索框 */
+
+.container {
+    z-index: 3;
+    margin-top: 75px;
+    position: relative;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-box {
+    position: absolute;
+    top: 360px;
+    left: 31%;
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    background-color: #f2f2f2;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+}
+
+.search-box input {
+    width: 200px;
+    padding: 8px;
+    border: none;
+    margin-right: 10px;
+}
+
+.search-box select {
+    padding: 8px;
+    /* margin-right: 10px; */
+}
+
+.search-box button {
+    padding: 8px 15px;
+    background-color: #4169e1;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-box button:hover {
+    background-color: #4169e1;
+}
+
+/* 搜索框 */
