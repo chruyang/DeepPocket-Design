@@ -201,5 +201,124 @@ class Runner():
             all_mol_dicts[index] = mol_dicts
         
         return all_mol_dicts
-            
-            
+
+    # [新增函数] 根据输入的 PDB 文件和 PocketMiner 预测出的中心坐标生成分子
+    def generate_direct(self, pdb_path, target_center, num_gen=100,
+                        temperature=[1.0, 1.0, 1.0, 1.0],
+                        min_atoms=2, max_atoms=35,
+                        focus_th=0.5, contact_th=0.5,
+                        binding_site_range=15.0,
+                        add_final=False, contact_prob=False):
+        """
+        参数说明 (与原版 generate 保持一致):
+        - pdb_path: 受体 PDB 文件路径
+        - target_center: PocketMiner 预测出的中心坐标 [x, y, z] (Tensor or list)
+        - num_gen: 生成分子数量
+        - binding_site_range: 切割半径 (默认 15.0A)
+        """
+
+        # 1. 确保中心坐标格式正确
+        if not isinstance(target_center, torch.Tensor):
+            target_center = torch.tensor(target_center, dtype=torch.float32)
+
+        # 2. 读取并解析 PDB
+        pdb_parser = PDBParser(QUIET=True)
+        structure_id = os.path.basename(pdb_path)
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', PDBConstructionWarning)
+            rec_structure = pdb_parser.get_structure(structure_id, pdb_path)
+
+        # 3. 提取原子特征 (严格复用原版逻辑: 排除氢原子)
+        rec_atom_type = []
+        rec_positions_list = []
+
+        for atom in rec_structure.get_atoms():
+            if atom.element == 'H':
+                continue
+
+            element = atom.element.upper()
+
+            # [修正点] 严格查表：遇到未知元素直接抛出 KeyError
+            # 这保证了如果 PDB 中含有不支持的原子(如 Mn, Fe 等如果不在字典里)，程序会报错提醒，而不是生成错误结果
+            rec_atom_type.append(atomic_element_to_type[element])
+            rec_positions_list.append(atom.coord)
+
+        if len(rec_atom_type) == 0:
+            print(f"Error: No valid atoms found in {pdb_path}")
+            return None
+
+        # 转换为 Tensor
+        rec_atom_type = torch.tensor(rec_atom_type)
+        rec_position = torch.tensor(np.stack(rec_positions_list, axis=0))
+
+        # 4. 结合位点切割 (核心修改点：使用传入的 center 替代 SDF 计算的 center)
+        rec_atom_dist_to_center = torch.sqrt(torch.sum(torch.square(rec_position - target_center), dim=-1))
+
+        # 生成掩码 Mask
+        selected_mask = rec_atom_dist_to_center <= binding_site_range
+
+        # 校验：如果该范围内没有原子，无法生成
+        if torch.sum(selected_mask) == 0:
+            print(f"Error: No protein atoms found within {binding_site_range}A of the center {target_center.numpy()}.")
+            return None
+
+        # 应用掩码
+        rec_atom_type = rec_atom_type[selected_mask]
+        rec_position = rec_position[selected_mask]
+
+        print(f"Processing {pdb_path}: {len(rec_atom_type)} atoms selected in context.")
+
+        # 5. 准备模型输入字典 (复用原版逻辑)
+        type_to_atomic_number_dict = {atomic_num_to_type[k]: k for k in atomic_num_to_type}
+        type_to_atomic_number = np.zeros([max(type_to_atomic_number_dict.keys()) + 1], dtype=int)
+        for k in type_to_atomic_number_dict:
+            type_to_atomic_number[k] = type_to_atomic_number_dict[k]
+
+        mol_dicts = {}
+        num_remain = num_gen
+        one_time_gen = self.conf.get('chunk_size', 10)
+
+        # 6. 生成循环 (完全复用原版 generate 循环)
+        self.model.eval()
+        device = next(self.model.parameters()).device
+
+        rec_atom_type = rec_atom_type.to(device)
+        rec_position = rec_position.to(device)
+
+        print(f"Generating {num_gen} molecules...")
+        while num_remain > 0:
+            batch_size = min(one_time_gen, num_remain)
+
+            with torch.no_grad():
+                mols = self.model.generate(
+                    type_to_atomic_number,
+                    rec_atom_type,
+                    rec_position,
+                    batch_size,
+                    temperature,
+                    min_atoms,
+                    max_atoms,
+                    focus_th,
+                    contact_th,
+                    add_final,
+                    contact_prob
+                )
+
+            for num_atom in mols:
+                if not num_atom in mol_dicts.keys():
+                    mol_dicts[num_atom] = mols[num_atom]
+                else:
+                    mol_dicts[num_atom]['_atomic_numbers'] = np.concatenate(
+                        (mol_dicts[num_atom]['_atomic_numbers'], mols[num_atom]['_atomic_numbers']), axis=0)
+                    mol_dicts[num_atom]['_positions'] = np.concatenate(
+                        (mol_dicts[num_atom]['_positions'], mols[num_atom]['_positions']), axis=0)
+                    mol_dicts[num_atom]['_focus'] = np.concatenate(
+                        (mol_dicts[num_atom]['_focus'], mols[num_atom]['_focus']), axis=0)
+
+                num_mol = len(mols[num_atom]['_atomic_numbers'])
+                num_remain -= num_mol
+
+        mol_dicts['rec_src'] = pdb_path
+        mol_dicts['center'] = target_center.cpu().numpy().tolist()
+
+        return mol_dicts
