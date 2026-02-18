@@ -141,14 +141,3 @@ furnished to do so, subject to the following conditions:
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit pull requests or open issues.
-
-## 📞 Support
-
-* **Issues**: [GitHub Issues](https://github.com/your-username/DeepPocket-Design/issues)
-* **Email**: support@deeppocket-design.org
-
-<div align="center">
-
-**🌟 If you find this project helpful, please give us a Star!**
-
-</div>
