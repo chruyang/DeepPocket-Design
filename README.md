@@ -1,4 +1,4 @@
-# 💊 DeepPocket Design: AI-Driven Drug Discovery Platform
+# 💊 AI-Driven Drug Discovery Platform
 
 <div align="center">
 
