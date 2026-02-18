@@ -16,7 +16,7 @@ MODULES_DIR = os.path.join(BASE_DIR, 'modules')
 MODELS_DIR = os.path.join(BASE_DIR, 'models')
 
 # Append paths for external modules
-sys.path.append(os.path.join(MODULES_DIR, 'gvp_pocket_pred/src'))
+sys.path.append(os.path.join(MODULES_DIR, 'gvp-pocket_pred', 'gvp-pocket_pred', 'src'))
 sys.path.append(os.path.join(MODULES_DIR, 'GraphBP'))
 
 # Initialize Logging

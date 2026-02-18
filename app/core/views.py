@@ -6,24 +6,17 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-# ==========================================
-# 1. 引入同级目录下的计算管线
-# ==========================================
-# 获取项目根目录 (pockettomol)
-BASE_DIR = settings.BASE_DIR
-sys.path.append(str(BASE_DIR))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_ROOT not in sys.path:
+    sys.path.append(PROJECT_ROOT)
 
 try:
-    # 直接导入根目录下的脚本
     from pipeline.bridge import run_pocketminer_logic, get_residue_center_from_pdb, run_graphbp_logic
-    from pipeline import md_engine
-
+    from pipeline import md_engine # 如果需要直接调用
     PIPELINE_READY = True
-    print("[Django] Pipeline modules loaded successfully.")
 except ImportError as e:
-    PIPELINE_READY = False
     print(f"[Django Error] Failed to load pipeline: {e}")
-
+    PIPELINE_READY = False
 # ==========================================
 # 2. 视图函数
 # ==========================================
