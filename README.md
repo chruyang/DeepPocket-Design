@@ -35,34 +35,6 @@
 
 ---
 
-## 📂 Project Structure
-
-```text
-DeepPocket-Design/
-├── app/                  # [Web Layer] Django Web Server
-│   ├── manage.py         # Django Management Entry Point
-│   ├── pocket_server/    # Core Project Configuration (Settings, URLs)
-│   └── core/             # Business Logic (Views, Templates)
-│
-├── pipeline/             # [Logic Layer] Core Algorithm Pipeline
-│   ├── bridge.py         # Pipeline Controller (Connecting PocketMiner -> MD -> GraphBP)
-│   └── md_engine.py      # MD Simulation Engine (OpenMM Wrapper)
-│
-├── modules/              # [External] Third-party Algorithm Source Code
-│   ├── gvp_pocket_pred/  # PocketMiner Source Code
-│   └── GraphBP/          # GraphBP Source Code
-│
-├── models/               # [Weights] Model Weight Files (Manual Download Required)
-│   ├── pocketminer/      # PocketMiner Weights (e.g., best_task1_gvp_fold0)
-│   └── graphbp/          # GraphBP Weights (e.g., model_33.pth)
-│
-├── static/               # Static Resources (CSS, JS, Images)
-├── templates/            # Frontend HTML Templates
-└── requirements.txt      # Python Dependencies List
-```
-
----
-
 ## 🛠️ Installation Guide
 
 ### 1. Environment Setup
