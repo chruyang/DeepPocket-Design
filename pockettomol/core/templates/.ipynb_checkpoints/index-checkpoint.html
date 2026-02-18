@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Drug Design Platform</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f5f7fa; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; }
+        .upload-area { border: 2px dashed #3498db; padding: 40px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.3s; margin: 20px 0; }
+        .upload-area:hover { background: #eaf6ff; }
+        #status { margin-top: 20px; display: none; }
+        .step { margin: 10px 0; padding: 10px; border-left: 4px solid #ddd; background: #fafafa; }
+        .step.active { border-color: #3498db; background: #fff; }
+        .step.done { border-color: #2ecc71; color: #2ecc71; }
+        button { background: #3498db; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer; width: 100%; }
+        button:disabled { background: #bdc3c7; }
+        pre { background: #2d3436; color: #dfe6e9; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>💊 AI Drug Design Pipeline</h1>
+    <p style="text-align: center; color: #7f8c8d;">PocketMiner (Target) → MD (Open) → GraphBP (Generate)</p>
+    
+    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <h3>Click to Upload PDB File</h3>
+        <p>Supports .pdb (Protein structures)</p>
+        <input type="file" id="fileInput" style="display:none" onchange="handleFile(this.files)">
+    </div>
+    <div id="fileName" style="text-align: center; margin-bottom: 10px; font-weight: bold;"></div>
+    
+    <button id="runBtn" onclick="runPipeline()" disabled>Run AI Pipeline</button>
+
+    <div id="status">
+        <h3>Pipeline Status:</h3>
+        <div id="logArea"></div>
+        <div id="resultArea" style="display:none; margin-top: 20px;">
+            <h3>✅ Generation Complete!</h3>
+            <p>Target Residue: <b id="resIdx"></b></p>
+            <p>MD Status: <b id="mdStat"></b></p>
+            <a id="downloadLink" href="#" target="_blank"><button style="background: #2ecc71;">Download Generated Molecules (.pkl)</button></a>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedFile = null;
+
+    function handleFile(files) {
+        if(files.length > 0) {
+            selectedFile = files[0];
+            document.getElementById('fileName').innerText = "Selected: " + selectedFile.name;
+            document.getElementById('runBtn').disabled = false;
+        }
+    }
+
+    async function runPipeline() {
+        if(!selectedFile) return;
+
+        const btn = document.getElementById('runBtn');
+        const statusDiv = document.getElementById('status');
+        const logArea = document.getElementById('logArea');
+        const resultArea = document.getElementById('resultArea');
+
+        btn.disabled = true;
+        btn.innerText = "Processing... (This takes ~30s)";
+        statusDiv.style.display = 'block';
+        resultArea.style.display = 'none';
+        
+        // 模拟日志
+        logArea.innerHTML = `
+            <div class="step active">🚀 Uploading PDB file...</div>
+            <div class="step">🔍 PocketMiner: Predicting binding sites...</div>
+            <div class="step">🌪️ OpenMM: Running Molecular Dynamics (GPU)...</div>
+            <div class="step">🧪 GraphBP: Generating drug candidates...</div>
+        `;
+
+        const formData = new FormData();
+        formData.append('pdb_file', selectedFile);
+
+        try {
+            const response = await fetch('/api/run', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                logArea.innerHTML = `
+                    <div class="step done">✅ Upload Complete</div>
+                    <div class="step done">✅ PocketMiner: Found pocket at residue ${data.pocket_residue}</div>
+                    <div class="step done">✅ MD Engine: ${data.md_status}</div>
+                    <div class="step done">✅ GraphBP: Molecules generated at [${data.center}]</div>
+                `;
+                
+                document.getElementById('resIdx').innerText = data.pocket_residue;
+                document.getElementById('mdStat').innerText = data.md_status;
+                document.getElementById('downloadLink').href = data.result_url;
+                resultArea.style.display = 'block';
+            } else {
+                logArea.innerHTML += `<div class="step" style="color:red">❌ Error: ${data.message}</div>`;
+            }
+        } catch (error) {
+            logArea.innerHTML += `<div class="step" style="color:red">❌ Network Error: ${error}</div>`;
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Run AI Pipeline";
+        }
+    }
+</script>
+
+</body>
+</html>
