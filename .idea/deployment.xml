@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" serverName="root@connect.nmb2.seetacloud.com:40350 agent" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
       <paths name="admin1@raspberrypi1:22 password">
         <serverdata>
@@ -93,10 +93,24 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="root@connect.nmb2.seetacloud.com:28883 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp/pocket" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="root@connect.nmb2.seetacloud.com:32622 password">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@connect.nmb2.seetacloud.com:40350 agent">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/pycharm_project_759" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
