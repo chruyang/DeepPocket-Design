@@ -17,7 +17,7 @@ MODELS_DIR = os.path.join(BASE_DIR, 'models')
 
 # Append paths for external modules
 sys.path.append(os.path.join(MODULES_DIR, 'gvp-pocket_pred', 'gvp-pocket_pred', 'src'))
-sys.path.append(os.path.join(MODULES_DIR, 'GraphBP'))
+sys.path.append(os.path.join(MODULES_DIR, 'GraphBP', 'GraphBP'))
 
 # Initialize Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -93,7 +93,7 @@ def run_pocketminer(pdb_path, weights_dir=None):
     logger.info(f"Step 1: Running PocketMiner on {os.path.basename(pdb_path)}")
 
     if weights_dir is None:
-        weights_dir = os.path.join(MODELS_DIR, 'pocketminer', 'best_task1_gvp_fold0')
+        weights_dir = os.path.join(MODULES_DIR, 'gvp-pocket_pred', 'gvp-pocket_pred', 'models', 'best_task1_gvp_fold0')
 
     # Initialize Model Architecture
     model = MQAModel(node_features=(8, 50), edge_features=(1, 32),
@@ -126,7 +126,7 @@ def run_graphbp(pdb_path, center, output_dir, weights_path=None):
     logger.info(f"Step 3: Running GraphBP generation")
 
     if weights_path is None:
-        weights_path = os.path.join(MODELS_DIR, 'graphbp', 'model_33.pth')
+        weights_path = os.path.join(MODULES_DIR, 'GraphBP', 'GraphBP', 'trained_model', 'model_33.pth')
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     graphbp_conf['model']['use_gpu'] = (device == 'cuda')

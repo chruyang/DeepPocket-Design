@@ -1,5 +1,7 @@
 import os
 import sys
+import json
+import threading
 import traceback
 from django.shortcuts import render
 from django.conf import settings
@@ -11,94 +13,106 @@ if PROJECT_ROOT not in sys.path:
     sys.path.append(PROJECT_ROOT)
 
 try:
-    from pipeline.bridge import run_pocketminer_logic, get_residue_center_from_pdb, run_graphbp_logic
-    from pipeline import md_engine # 如果需要直接调用
+    from pipeline.bridge import run_pocketminer, get_residue_center, run_graphbp
+    from pipeline import md_engine
+
     PIPELINE_READY = True
 except ImportError as e:
     print(f"[Django Error] Failed to load pipeline: {e}")
     PIPELINE_READY = False
-# ==========================================
-# 2. 视图函数
-# ==========================================
+
 
 def index(request):
-    """渲染主页"""
     return render(request, 'index.html')
 
-@csrf_exempt  # 暂时禁用 CSRF 方便测试
-def run_pipeline(request):
-    """核心接口：接收 PDB -> 运行 AI -> 返回结果"""
-    if request.method != 'POST':
-        return JsonResponse({'status': 'error', 'message': 'Only POST allowed'})
-    
-    if 'pdb_file' not in request.FILES:
-        return JsonResponse({'status': 'error', 'message': 'No file uploaded'})
 
-    if not PIPELINE_READY:
-        return JsonResponse({'status': 'error', 'message': 'Backend pipeline not initialized'})
-
+# ==========================================
+# 新增：后台计算线程函数
+# ==========================================
+def background_task(file_path, upload_dir, task_id):
+    """在后台执行耗时的 AI 管线，并将结果写入 status.json"""
+    status_file = os.path.join(upload_dir, 'status.json')
     try:
-        # A. 保存上传文件
-        pdb_file = request.FILES['pdb_file']
-        
-        # 创建本次任务的专属目录 (建议用 UUID，这里演示简单起见直接用文件名)
-        task_id = os.path.splitext(pdb_file.name)[0]
-        upload_dir = os.path.join(settings.MEDIA_ROOT, 'tasks', task_id)
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-            
-        file_path = os.path.join(upload_dir, 'input.pdb')
-        
-        # 写入文件
-        with open(file_path, 'wb+') as f:
-            for chunk in pdb_file.chunks():
-                f.write(chunk)
-        
-        print(f"--- [Task {task_id}] Started ---")
+        print(f"\n--- [Task {task_id}] Started in Background ---")
 
-        # B. 运行 PocketMiner
-        target_res_idx = run_pocketminer_logic(file_path)
+        # 1. PocketMiner
+        target_res_idx = run_pocketminer(file_path)
         if target_res_idx is None:
-            return JsonResponse({'status': 'error', 'message': 'PocketMiner failed'})
+            raise ValueError("PocketMiner failed to find a pocket.")
 
-        # C. 运行 MD (由于您有显卡，我们默认开启)
-        md_pdb_path = file_path
-        md_status = "Skipped"
-        
-        try:
-            # 运行 5000 步 (约 10ps)，显卡几秒搞定
-            print(f"--- [Task {task_id}] Running MD ---")
-            md_pdb_path = md_engine.run_simulation_and_pick_open_structure(
-                file_path, target_res_idx, upload_dir, steps=5000
-            )
-            md_status = "Success (GPU)"
-        except Exception as e:
-            print(f"MD Failed: {e}")
-            md_status = f"Failed: {str(e)}"
+        # 2. MD Simulation (您可以放心使用 5000 步了)
+        print(f"--- [Task {task_id}] Running MD ---")
+        md_pdb_path = md_engine.run_simulation(file_path, target_res_idx, upload_dir, steps=5000)
 
-        # D. 运行 GraphBP
+        # 3. GraphBP
         print(f"--- [Task {task_id}] Running GraphBP ---")
-        center = get_residue_center_from_pdb(md_pdb_path, target_res_idx)
-        run_graphbp_logic(md_pdb_path, center, upload_dir)
+        center = get_residue_center(md_pdb_path, target_res_idx)
+        run_graphbp(md_pdb_path, center, upload_dir)
 
-        # E. 检查结果
-        result_pkl = os.path.join(upload_dir, 'generated_molecules.pkl')
-        if os.path.exists(result_pkl):
-            # 构造下载链接
-            result_url = f"/media/tasks/{task_id}/generated_molecules.pkl"
-            pdb_url = f"/media/tasks/{task_id}/best_open_pocket.pdb" if md_status.startswith("Success") else f"/media/tasks/{task_id}/input.pdb"
-            
-            return JsonResponse({
+        # 4. 成功后更新状态文件
+        result_url = f"/media/tasks/{task_id}/generated_molecules.pkl"
+        pdb_url = f"/media/tasks/{task_id}/md_final.pdb"
+        with open(status_file, 'w') as f:
+            json.dump({
                 'status': 'success',
                 'pocket_residue': int(target_res_idx),
-                'md_status': md_status,
                 'center': [float(x) for x in center.numpy()],
                 'result_url': result_url,
                 'pdb_url': pdb_url
-            })
-        else:
-            return JsonResponse({'status': 'error', 'message': 'GraphBP generation failed'})
+            }, f)
+        print(f"--- [Task {task_id}] Finished Successfully! ---")
 
     except Exception as e:
         traceback.print_exc()
-        return JsonResponse({'status': 'error', 'message': str(e)})
+        with open(status_file, 'w') as f:
+            json.dump({'status': 'error', 'message': str(e)}, f)
+
+
+# ==========================================
+# 修改：API 接口变为异步提交
+# ==========================================
+@csrf_exempt
+def run_pipeline(request):
+    if request.method != 'POST': return JsonResponse({'status': 'error'})
+    if not PIPELINE_READY: return JsonResponse({'status': 'error', 'message': 'Pipeline not ready'})
+
+    pdb_file = request.FILES.get('pdb_file')
+    if not pdb_file: return JsonResponse({'status': 'error', 'message': 'No file'})
+
+    # 创建任务目录
+    task_id = os.path.splitext(pdb_file.name)[0]
+    upload_dir = os.path.join(settings.MEDIA_ROOT, 'tasks', task_id)
+    os.makedirs(upload_dir, exist_ok=True)
+    file_path = os.path.join(upload_dir, 'input.pdb')
+
+    with open(file_path, 'wb+') as f:
+        for chunk in pdb_file.chunks(): f.write(chunk)
+
+    # 初始化状态为 processing
+    status_file = os.path.join(upload_dir, 'status.json')
+    with open(status_file, 'w') as f:
+        json.dump({'status': 'processing', 'message': 'Task is running in background...'}, f)
+
+    # 启动后台线程执行计算 (这行代码不阻塞，瞬间返回)
+    thread = threading.Thread(target=background_task, args=(file_path, upload_dir, task_id))
+    thread.start()
+
+    # 秒回前端，告诉前端任务 ID
+    return JsonResponse({'status': 'processing', 'task_id': task_id})
+
+
+# ==========================================
+# 新增：查询任务状态接口
+# ==========================================
+def check_status(request):
+    task_id = request.GET.get('task_id')
+    if not task_id: return JsonResponse({'status': 'error', 'message': 'Missing task_id'})
+
+    status_file = os.path.join(settings.MEDIA_ROOT, 'tasks', task_id, 'status.json')
+    if not os.path.exists(status_file):
+        return JsonResponse({'status': 'error', 'message': 'Task not found'})
+
+    with open(status_file, 'r') as f:
+        status_data = json.load(f)
+
+    return JsonResponse(status_data)
