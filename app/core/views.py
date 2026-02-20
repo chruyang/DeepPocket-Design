@@ -27,10 +27,10 @@ def index(request):
 
 
 # ==========================================
-# 新增：后台计算线程函数
+# Added: Background computation thread function
 # ==========================================
 def background_task(file_path, upload_dir, task_id):
-    """在后台执行耗时的 AI 管线，并将结果写入 status.json"""
+    """Execute time-consuming AI pipeline in background and write results to status.json"""
     status_file = os.path.join(upload_dir, 'status.json')
     try:
         print(f"\n--- [Task {task_id}] Started in Background ---")
@@ -40,7 +40,7 @@ def background_task(file_path, upload_dir, task_id):
         if target_res_idx is None:
             raise ValueError("PocketMiner failed to find a pocket.")
 
-        # 2. MD Simulation (您可以放心使用 5000 步了)
+        # 2. MD Simulation (You can safely use 5000 steps now)
         print(f"--- [Task {task_id}] Running MD ---")
         md_pdb_path = md_engine.run_simulation(file_path, target_res_idx, upload_dir, steps=5000)
 
@@ -49,7 +49,7 @@ def background_task(file_path, upload_dir, task_id):
         center = get_residue_center(md_pdb_path, target_res_idx)
         run_graphbp(md_pdb_path, center, upload_dir)
 
-        # 4. 成功后更新状态文件
+        # 4. Update status file after success
         result_url = f"/media/tasks/{task_id}/generated_molecules.pkl"
         pdb_url = f"/media/tasks/{task_id}/md_final.pdb"
         with open(status_file, 'w') as f:
@@ -69,7 +69,7 @@ def background_task(file_path, upload_dir, task_id):
 
 
 # ==========================================
-# 修改：API 接口变为异步提交
+# Modified: API interface changed to asynchronous submission
 # ==========================================
 @csrf_exempt
 def run_pipeline(request):
@@ -97,12 +97,12 @@ def run_pipeline(request):
     thread = threading.Thread(target=background_task, args=(file_path, upload_dir, task_id))
     thread.start()
 
-    # 秒回前端，告诉前端任务 ID
+    # Instantly respond to frontend, tell frontend the task ID
     return JsonResponse({'status': 'processing', 'task_id': task_id})
 
 
 # ==========================================
-# 新增：查询任务状态接口
+# Added: Query task status interface
 # ==========================================
 def check_status(request):
     task_id = request.GET.get('task_id')

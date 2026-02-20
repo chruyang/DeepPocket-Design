@@ -89,7 +89,7 @@ class CrossDocked2020_SBDD(Dataset):
     
     def read_rec_mol(self, mol_src):
         '''
-        mol_src: the path of a .pdb file
+        mol_src: path to a .pdb file
         return: biopython <Structure>
         '''
         with warnings.catch_warnings():
@@ -100,7 +100,7 @@ class CrossDocked2020_SBDD(Dataset):
     
     def read_lig_mol(self, mol_src):
         '''
-        mol_src: the path of a .sdf file
+        mol_src: path to a .sdf file
         return: rdkit.Chem.rdmolfiles.SDMolSupplier
         '''
         supp = Chem.SDMolSupplier()
@@ -119,7 +119,7 @@ class CrossDocked2020_SBDD(Dataset):
 
     def __getitem__(self, index):
         '''
-        Note that H atoms are not considered in both lig and rec.
+        Note: Hydrogen atoms are excluded from both ligand and receptor processing.
         '''
         example = self.data_lines.iloc[index]
         rec_structure = self.get_rec_mol(example.rec_src)

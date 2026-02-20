@@ -72,7 +72,7 @@ class GraphBP(nn.Module):
         local_dist_feat = node_emb[focus[:,0]]
         dist_latent, dist_log_jacob = flow_forward(self.dist_flow_layers, dist, local_dist_feat)
         
-        ### d --> theta
+        ### distance --> angle
 
         dist_emb = self.dist_lb2(self.dist_emb(dist.squeeze()[batch].to(torch.float)))
         node_emb = node_emb * dist_emb # [N, hidden] * [N, hidden]. N is the total number of steps for all molecules in the batch
@@ -84,7 +84,7 @@ class GraphBP(nn.Module):
 
         
         
-        ###  d, theta --> phi
+        ### distance, angle --> dihedral angle
         dist_angle_emd = self.angle_lb2(self.angle_emb(dist.squeeze()[batch].to(torch.float), angle.squeeze()[batch].to(torch.float)))
         
         node_emb = node_emb * dist_angle_emd

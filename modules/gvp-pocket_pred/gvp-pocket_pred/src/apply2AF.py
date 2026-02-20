@@ -22,7 +22,7 @@ abbrev = {"ALA" : "A" , "ARG" : "R" , "ASN" : "N" , "ASP" : "D" , "CYS" : "C" , 
 lookup = {'C': 4, 'D': 3, 'S': 15, 'Q': 5, 'K': 11, 'I': 9, 'P': 14, 'T': 16, 'F': 13, 'A': 0, 'G': 7, 'H': 8, 'E': 6, 'L': 10, 'R': 1, 'W': 17, 'V': 19, 'N': 2, 'Y': 18, 'M': 12}
 
 def process_struc(strucs):
-    """Takes a list of single frame md.Trajectory objects
+    """Process a list of single frame md.Trajectory objects
     """
     
     pdbs = []

@@ -181,7 +181,7 @@ class DynamicLoader():
         self.use_lm = use_lm
 
     def chunks(self,arr, chunk_size):
-        """Yield successive chunk_size chunks from arr."""
+        """Generate successive chunk_size chunks from array."""
         for i in range(0, len(arr), chunk_size):
             yield arr[i:i + chunk_size]
 
