@@ -47,45 +47,40 @@ except ImportError as e:
     logger.error(f"Failed to import GraphBP dependencies: {e}")
 
 
-def get_residue_center(pdb_path, residue_idx):
+def get_residue_center(pdb_path, target_res_idx):
     """
-    Calculates the geometric center of a specific residue in a PDB file.
-
-    Args:
-        pdb_path (str): Path to the PDB file.
-        residue_idx (int): 0-based index of the residue.
-
-    Returns:
-        torch.Tensor: (x, y, z) coordinates.
+    Robustly extracts the center of mass of a target residue.
+    Bypasses BioPython to absolutely avoid the 'A000' OpenMM hex numbering crash.
     """
-    parser = PDBParser(QUIET=True)
-    with warnings.catch_warnings():
-        warnings.simplefilter('ignore', PDBConstructionWarning)
-        structure = parser.get_structure('target', pdb_path)
+    coords = []
+    target_str = str(target_res_idx).strip()
 
-    atoms_coords = []
-    current_idx = 0
-    found = False
+    with open(pdb_path, 'r') as f:
+        for line in f:
+            # 只看原子坐标行
+            if line.startswith("ATOM") or line.startswith("HETATM"):
+                # PDB标准格式：第 23-26 列是残基编号
+                res_seq = line[22:26].strip()
 
-    for model in structure:
-        for chain in model:
-            for residue in chain:
-                if residue.id[0] != ' ': continue  # Skip heteroatoms
+                # 如果是我们要找的靶点残基
+                if res_seq == target_str:
+                    try:
+                        # PDB标准格式：坐标分别在 31-38, 39-46, 47-54 列
+                        x = float(line[30:38])
+                        y = float(line[38:46])
+                        z = float(line[46:54])
+                        coords.append([x, y, z])
+                    except ValueError:
+                        continue
 
-                if current_idx == residue_idx:
-                    for atom in residue:
-                        if atom.element != 'H':
-                            atoms_coords.append(atom.coord)
-                    found = True
-                    break
-                current_idx += 1
-            if found: break
-        if found: break
+    if not coords:
+        raise ValueError(f"Target residue {target_res_idx} not found in {pdb_path}")
 
-    if not found or not atoms_coords:
-        raise ValueError(f"Residue index {residue_idx} invalid for {pdb_path}")
+    # 计算几何中心点
+    center = np.mean(coords, axis=0)
 
-    return torch.tensor(np.mean(atoms_coords, axis=0), dtype=torch.float32)
+    # 返回 GraphBP 需要的 PyTorch Tensor 格式
+    return torch.tensor(center, dtype=torch.float32)
 
 
 def run_pocketminer(pdb_path, weights_dir=None):
