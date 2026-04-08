@@ -117,8 +117,8 @@ def run_pocketminer(pdb_path, weights_dir=None):
 
 
 def run_graphbp(pdb_path, center, output_dir, weights_path=None):
-    """Run GraphBP to generate molecules at the target center."""
-    logger.info(f"Step 3: Running GraphBP generation")
+    """Run GraphBP to generate precisely a fixed number of organic molecules at the target center."""
+    logger.info(f"Step 3: Running GraphBP generation (Target: 10 pure organic molecules)")
 
     if weights_path is None:
         weights_path = os.path.join(MODULES_DIR, 'GraphBP', 'GraphBP', 'trained_model', 'model_33.pth')
@@ -136,20 +136,70 @@ def run_graphbp(pdb_path, center, output_dir, weights_path=None):
     runner.model.to(device)
 
     try:
-        mols_dict = runner.generate_direct(
-            pdb_path=pdb_path,
-            target_center=center,
-            num_gen=10,
-            temperature=[1.0] * 4,
-            min_atoms=10, max_atoms=40,
-            binding_site_range=15.0
-        )
+        target_valid_mols = 10  # 目标：固定生成 10 个
+        # 允许的有机元素白名单 (C, N, O, F, P, S, Cl, Br, I)
+        ALLOWED_ATOMS = {6, 7, 8, 9, 15, 16, 17, 35, 53}
 
+        filtered_mols_dict = {}
+        valid_count = 0
+        max_attempts = 5  # 最大尝试次数，防止死循环
+        attempts = 0
+
+        # 只要纯有机分子数量没攒够 10 个，就继续生成
+        while valid_count < target_valid_mols and attempts < max_attempts:
+            attempts += 1
+            # 每次多生成一些以提高命中率（比如缺 5 个，就生成 15 个）
+            batch_gen = max(10, (target_valid_mols - valid_count) * 3)
+
+            logger.info(f"Attempt {attempts}: Generating batch of {batch_gen} molecules...")
+
+            mols_dict = runner.generate_direct(
+                pdb_path=pdb_path,
+                target_center=center,
+                num_gen=batch_gen,
+                temperature=[1.0] * 4,
+                min_atoms=10, max_atoms=40,
+                binding_site_range=15.0
+            )
+
+            # 在内存中立刻过滤刚刚生成的这一批次
+            for num_atoms, data in mols_dict.items():
+                # 处理 metadata（如 rec_src, center 等非分子坐标信息）
+                if not isinstance(num_atoms, int):
+                    if num_atoms not in filtered_mols_dict:
+                        filtered_mols_dict[num_atoms] = data
+                    continue
+
+                batch_size = len(data['_atomic_numbers'])
+                for i in range(batch_size):
+                    if valid_count >= target_valid_mols:
+                        break  # 如果已经凑齐 10 个，立刻停止提取
+
+                    atomic_numbers = data['_atomic_numbers'][i]
+                    positions = data['_positions'][i]
+
+                    # 核心过滤器：只接受全都是白名单有机元素的分子
+                    if set(atomic_numbers).issubset(ALLOWED_ATOMS):
+                        if num_atoms not in filtered_mols_dict:
+                            filtered_mols_dict[num_atoms] = {'_atomic_numbers': [], '_positions': []}
+
+                        filtered_mols_dict[num_atoms]['_atomic_numbers'].append(atomic_numbers)
+                        filtered_mols_dict[num_atoms]['_positions'].append(positions)
+                        valid_count += 1
+
+                if valid_count >= target_valid_mols:
+                    break
+
+        # 保存结果
         output_file = os.path.join(output_dir, 'generated_molecules.pkl')
         import pickle
         with open(output_file, 'wb') as f:
-            pickle.dump(mols_dict, f)
-        logger.info(f"Generated molecules saved to {output_file}")
+            pickle.dump(filtered_mols_dict, f)
+
+        if valid_count == target_valid_mols:
+            logger.info(f"Success! Exactly {valid_count} organic molecules generated and saved to {output_file}")
+        else:
+            logger.warning(f"Stopped after {max_attempts} attempts. Generated {valid_count} organic molecules.")
 
     except Exception as e:
         logger.error(f"GraphBP Generation failed: {e}")

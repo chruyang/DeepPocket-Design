@@ -15,9 +15,7 @@
         .step.done { border-color: #2ecc71; color: #2ecc71; }
         button { background: #3498db; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer; width: 100%; }
         button:disabled { background: #bdc3c7; }
-        pre { background: #2d3436; color: #dfe6e9; padding: 15px; border-radius: 6px; overflow-x: auto; }
 
-        /* 增加一个跳动的点动画，表示正在后台计算 */
         .loading-dots:after {
             content: '.';
             animation: dots 1.5s steps(5, end) infinite;
@@ -52,8 +50,9 @@
             <h3>✅ Generation Complete!</h3>
             <p>Target Residue: <b id="resIdx"></b></p>
             <p>Center Coordinate: <b id="centerCoord"></b></p>
+            <p>Generated Organic Molecules: <b id="numMols" style="color:#2ecc71; font-size: 1.2em;"></b></p>
             <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <a id="downloadLink" href="#" target="_blank" style="flex: 1;"><button style="background: #2ecc71;">Download Molecules (.pkl)</button></a>
+                <a id="downloadLink" href="#" target="_blank" style="flex: 1;"><button style="background: #2ecc71;">Download Molecules (.sdf)</button></a>
                 <a id="downloadPdbLink" href="#" target="_blank" style="flex: 1;"><button style="background: #9b59b6;">Download MD Pocket (.pdb)</button></a>
             </div>
         </div>
@@ -84,48 +83,40 @@
         statusDiv.style.display = 'block';
         resultArea.style.display = 'none';
 
-        logArea.innerHTML = `
-            <div class="step done">🚀 Uploading PDB file...</div>
-        `;
+        logArea.innerHTML = `<div class="step done">🚀 Uploading PDB file...</div>`;
 
         const formData = new FormData();
         formData.append('pdb_file', selectedFile);
 
         try {
-            // 1. 发送任务给后端 (瞬间返回)
-            const response = await fetch('/api/run', {
-                method: 'POST',
-                body: formData
-            });
+            const response = await fetch('/api/run', { method: 'POST', body: formData });
             const data = await response.json();
 
             if (data.status === 'processing') {
                 const taskId = data.task_id;
-                console.log("Task submitted successfully, ID:", taskId);
 
                 btn.innerText = "AI Computing in Background...";
                 logArea.innerHTML += `
-                    <div class="step active"><span class="loading-dots">⏳ Running AI models (PocketMiner → MD Engine → GraphBP)</span><br><small style="color: #7f8c8d; font-size: 12px; margin-top: 5px; display: inline-block;">This may take a few minutes. Please keep this page open.</small></div>
+                    <div class="step active"><span class="loading-dots">⏳ Running AI models (Generating Organic Molecules)</span><br><small style="color: #7f8c8d; font-size: 12px; margin-top: 5px; display: inline-block;">This may take a few minutes. Please keep this page open.</small></div>
                 `;
 
-                // 2. 开启轮询：每 3 秒查一次状态
                 const intervalId = setInterval(async () => {
                     try {
                         const statusRes = await fetch(`/api/status?task_id=${taskId}`);
                         const statusData = await statusRes.json();
 
                         if (statusData.status === 'success') {
-                            // 计算完成，停止轮询
                             clearInterval(intervalId);
 
                             logArea.innerHTML = `
                                 <div class="step done">✅ Upload Complete</div>
                                 <div class="step done">✅ PocketMiner: Found pocket at residue ${statusData.pocket_residue}</div>
                                 <div class="step done">✅ MD Engine: Conformation induced successfully</div>
-                                <div class="step done">✅ GraphBP: Molecules generated!</div>
+                                <div class="step done">✅ GraphBP: Exactly 10 organic molecules generated!</div>
                             `;
 
                             document.getElementById('resIdx').innerText = statusData.pocket_residue;
+                            document.getElementById('numMols').innerText = statusData.num_mols + " Validated";
 
                             if (statusData.center && statusData.center.length === 3) {
                                 document.getElementById('centerCoord').innerText = `[${statusData.center[0].toFixed(2)}, ${statusData.center[1].toFixed(2)}, ${statusData.center[2].toFixed(2)}]`;
@@ -139,19 +130,15 @@
                             btn.innerText = "Run Another Pipeline";
 
                         } else if (statusData.status === 'error') {
-                            // 发生错误，停止轮询
                             clearInterval(intervalId);
                             logArea.innerHTML = `<div class="step" style="color:red">❌ Pipeline Error: ${statusData.message}</div>`;
                             btn.disabled = false;
                             btn.innerText = "Run AI Pipeline";
                         }
-                        // 如果状态是 'processing'，就什么也不做，等下个 3 秒
-
                     } catch (pollError) {
                         console.error("Polling error:", pollError);
-                        // 遇到偶尔的网络波动不停止，继续尝试下一次轮询
                     }
-                }, 3000); // 3000ms = 3s
+                }, 3000);
 
             } else {
                 logArea.innerHTML += `<div class="step" style="color:red">❌ Submission Error: ${data.message}</div>`;

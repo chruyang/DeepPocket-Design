@@ -10,13 +10,13 @@ logger = logging.getLogger(__name__)
 
 def run_simulation(pdb_path, target_res_idx, output_dir, steps=5000):
     """
-    Runs MD simulation with pure-text pre/post processing to strictly preserve
+    Runs MD simulation with text-based pre/post-processing to preserve
     original PDB residue numbering.
     """
     logger.info(f"Starting MD Simulation on {os.path.basename(pdb_path)}")
 
     # ==========================================
-    # 1. 基础清理：纯文本过滤 (完全保留原有残基序号)
+    # Step 1: Clean PDB via text filtering (preserve residue numbering)
     # ==========================================
     clean_pdb_path = os.path.join(output_dir, "clean_input.pdb")
     valid_res = {"ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS",
@@ -38,9 +38,9 @@ def run_simulation(pdb_path, target_res_idx, output_dir, steps=5000):
         input_pdb = pdb_path
 
     # ==========================================
-    # 2. 自动修补与设置系统
+    # Step 2: System setup and solvation
     # ==========================================
-    logger.info("Fixing missing atoms with PDBFixer...")
+    logger.info("Fixing missing atoms...")
     fixer = PDBFixer(filename=input_pdb)
     fixer.findMissingResidues()
     fixer.findNonstandardResidues()
@@ -51,7 +51,7 @@ def run_simulation(pdb_path, target_res_idx, output_dir, steps=5000):
 
     fixed_pdb_path = os.path.join(output_dir, "fixed_input.pdb")
     with open(fixed_pdb_path, 'w') as f:
-        # 【关键】keepIds=True 强制 OpenMM 保留修复前的残基序号
+        # Preserve original residue IDs during fixer output
         app.PDBFile.writeFile(fixer.topology, fixer.positions, f, keepIds=True)
 
     pdb = app.PDBFile(fixed_pdb_path)
@@ -80,12 +80,12 @@ def run_simulation(pdb_path, target_res_idx, output_dir, steps=5000):
     simulation.step(steps)
 
     # ==========================================
-    # 3. 保存并进行纯文本脱水
+    # Step 3: Save trajectory and strip solvent
     # ==========================================
     state = simulation.context.getState(getPositions=True)
     raw_final_pdb = os.path.join(output_dir, 'md_raw_with_water.pdb')
     with open(raw_final_pdb, 'w') as f:
-        # 再次强制保留 IDs
+        # Preserve residue IDs
         app.PDBFile.writeFile(simulation.topology, state.getPositions(), f, keepIds=True)
 
     final_pdb = os.path.join(output_dir, 'md_final.pdb')
@@ -95,7 +95,7 @@ def run_simulation(pdb_path, target_res_idx, output_dir, steps=5000):
             for line in fin:
                 if line.startswith("ATOM") or line.startswith("HETATM"):
                     res_name = line[17:20].strip()
-                    # 剔除水分子的名称标识
+                    # Exclude water and ion residues
                     if res_name not in ["HOH", "WAT", "Na+", "Cl-", "NA", "CL"]:
                         fout.write(line)
                 elif line.startswith(("CRYST1", "END", "TER")):
